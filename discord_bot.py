@@ -9,7 +9,7 @@
 # binod.meme done
 # binod.suggest done
 
-import discord, requests, json, wikipedia, os, random #, smtplib
+import discord, requests, json, wikipedia, os, random, smtplib, datetime
 
 client = discord.Client()
 
@@ -122,29 +122,21 @@ async def on_message(message):
         author = message.author.mention
         author_name = message.author
         text = f"{author_name}: {suggestion}\n"
-        with open(r"C:\Users\Lenovo\Documents\Python Codes\discord bot suggest.txt", 'a') as f:
-            f.write(text)
-        await message.channel.send(f"{author} Your suggestion has been recorded!")
-
-    # elif command.startswith("binod.ask"):
-    #     doubt = command.replace("binod.ask", "")
-    #     author_mention = message.author.mention
-    #     author = message.author
         
-    #     subject = f"{author}'s doubt"
-    #     body = f"Sir, \n{author} has following doubt regarding the python tutorials you're conducting. \n\n {author}: {doubt}"
+        subject = f"{author_name}'s suggestion for binod-bot"
+        body = f"Sir, \nOn {datetime.datetime.now()}, {author_name} suggested following feature for the binod bot on discord. \n\n {author_name}: {suggestion}"
 
-    #     try:
-    #         server = smtplib.SMTP('smtp.mail.yahoo.com', 587)
-    #         server.ehlo()
-    #         server.starttls()
-    #         server.login('delunator.one@yahoo.com', "ytxyqkendtnngqib")
-    #         server.sendmail('delunator.one@yahoo.com', 'delunator.one@yahoo.com', f"Subject: {subject}\n\n{body}")
-    #         server.quit()
-    #         await message.channel.send(f"{author_mention}, your doubt has been sent to Shravan.")
+        try:
+            server = smtplib.SMTP('smtp.mail.yahoo.com', 587)
+            server.ehlo()
+            server.starttls()
+            server.login('delunator.one@yahoo.com', "ytxyqkendtnngqib")
+            server.sendmail('delunator.one@yahoo.com', 'delunator.one@yahoo.com', f"Subject: {subject}\n\n{body}")
+            server.quit()
+            await message.channel.send(f"{author} Your suggestion has been recorded!")
 
-    #     except Exception as e:
-    #         print(e)
-    #         await message.channel.send("Couldn't connect at the moment! Try again later!")
+        except Exception as e:
+            print(e)
+            await message.channel.send("Couldn't connect at the moment! Try again later!")
 
 client.run("NzYwNTE2MTc5MDQ2ODI1OTk0.X3NL4g.zRL8-FwDNSzL6YgXB2mbzHeWx6Y")
