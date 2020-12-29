@@ -10,6 +10,7 @@
 # binod.suggest done
 
 import discord, requests, json, wikipedia, os, random, smtplib, datetime
+from bs4 import BeautifulSoup
 
 client = discord.Client()
 
@@ -112,10 +113,20 @@ async def on_message(message):
         
 
     elif command.startswith('binod.meme'):
-        meme_directory = r"C:\Users\Lenovo\Documents\Discord Bot Memes"
-        contents = os.listdir(meme_directory)
-        meme = random.choice(contents)
-        await message.channel.send(file=discord.File(os.path.join(meme_directory, meme)))
+        r = requests.get("https://imgflip.com/")
+        soup = BeautifulSoup(r.content, "html5lib")
+
+        images = soup.find_all("img")
+        r = random.choice(images)
+        link = (r["src"])
+        ext = link.split(".")[-1]
+
+        location = f"meme.{ext}"
+        data = requests.get("http:"+link).content
+        with open(location, "wb") as f:
+            f.write(data)
+
+        await message.channel.send(file=discord.File(location))
 
     elif command.startswith("binod.suggest"):
         suggestion = command.replace("binod.suggest", "")
