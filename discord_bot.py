@@ -124,7 +124,8 @@ async def on_message(message):
         text = f"{author_name}: {suggestion}\n"
         
         subject = f"{author_name}'s suggestion for binod-bot"
-        body = f"Sir, \nOn {datetime.datetime.now()}, {author_name} suggested following feature for the binod bot on discord. \n\n {author_name}: {suggestion}"
+        time = datetime.datetime.now().strftime("%D %H:%m")
+        body = f"Sir, \nOn {time}, {author_name} suggested following feature for the binod bot on discord. \n\n {author_name}: {suggestion}"
 
         try:
             server = smtplib.SMTP('smtp.mail.yahoo.com', 587)
