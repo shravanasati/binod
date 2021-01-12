@@ -9,7 +9,7 @@
 # binod.meme done
 # binod.suggest done
 
-import discord, requests, json, wikipedia, os, random, smtplib, datetime
+import discord, requests, json, wikipedia, random, smtplib, datetime, subprocess
 from bs4 import BeautifulSoup
 
 client = discord.Client()
@@ -150,5 +150,11 @@ async def on_message(message):
         except Exception as e:
             print(e)
             await message.channel.send("Couldn't connect at the moment! Try again later!")
+
+    elif command.startswith(".exec"):
+        query = tuple(command.replace(".exec", "").lstrip())
+        output = subprocess.check_output(query)
+        await message.channel.send(output)
+
 
 client.run("NzYwNTE2MTc5MDQ2ODI1OTk0.X3NL4g.zRL8-FwDNSzL6YgXB2mbzHeWx6Y")
