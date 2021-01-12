@@ -151,9 +151,9 @@ async def on_message(message):
             print(e)
             await message.channel.send("Couldn't connect at the moment! Try again later!")
 
-    elif command.startswith(".exec"):
-        query = tuple(command.replace(".exec", "").lstrip())
-        output = subprocess.check_output(query)
+    elif command.startswith("/exec"):
+        query = command.replace(".exec", "").lstrip()
+        output = subprocess.check_output(query, shell=True).decode("utf-8")
         await message.channel.send(output)
 
 
