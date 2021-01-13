@@ -11,3 +11,4 @@ requests == 2.21.0
 
 # C:\Users\Lenovo\Documents\Python Codes\Python Files\Major Projects\binod-bot\discord_bot.py: 12
 wikipedia == 1.4.0
+html5lib == 1.1
