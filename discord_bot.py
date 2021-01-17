@@ -14,7 +14,7 @@ import json
 import random
 import smtplib
 import subprocess
-import urljoin
+ 
 import discord
 import requests
 import wikipedia
@@ -141,13 +141,14 @@ async def on_message(message):
             ext = link.split(".")[-1]
 
             location = f"meme.{ext}"
-            data = requests.get(urljoin.url_path_join("http:", link)).content
+            data = requests.get(("http:" + link)).content
             with open(location, "wb") as f:
                 f.write(data)
 
             await message.channel.send(file=discord.File(location))
 
         except Exception as e:
+            await message.channel.send("Some error occured!")
             send_mail("Binod bot notification", e)
 
     elif command.startswith("binod.suggest"):
