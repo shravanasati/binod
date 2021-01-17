@@ -14,7 +14,7 @@ import json
 import random
 import smtplib
 import subprocess
-
+import urljoin
 import discord
 import requests
 import wikipedia
@@ -141,7 +141,7 @@ async def on_message(message):
             ext = link.split(".")[-1]
 
             location = f"meme.{ext}"
-            data = requests.get("http:"+link).content
+            data = requests.get(urljoin.url_path_join("http:", link)).content
             with open(location, "wb") as f:
                 f.write(data)
 
@@ -169,9 +169,13 @@ async def on_message(message):
             await message.channel.send("Couldn't connect at the moment! Try again later!")
 
     elif command.startswith("/exec"):
-        query = command.replace("/exec", "").lstrip()
-        output = subprocess.check_output(query, shell=True).decode("utf-8")
-        await message.channel.send(output)
+        try:
+            query = command.replace("/exec", "").lstrip()
+            output = subprocess.check_output(query, shell=True).decode("utf-8")
+            await message.channel.send(output)
+
+        except subprocess.CalledProcessError as e:
+            await message.channel.send(e)
 
 
 client.run("NzYwNTE2MTc5MDQ2ODI1OTk0.X3NL4g.zRL8-FwDNSzL6YgXB2mbzHeWx6Y")
