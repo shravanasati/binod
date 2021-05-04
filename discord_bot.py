@@ -1,4 +1,4 @@
-# TO DO:
+# TODO:
 # binod.commands done
 # binod.news done
 # binod.weather done
@@ -14,7 +14,7 @@ import json
 import random
 import smtplib
 import subprocess
- 
+
 import discord
 import requests
 import wikipedia
@@ -46,7 +46,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    help = "Hello I am a bot made by Shravan! You can do some really amazing things by following commands.\n\n binod.help = Bring this help message\n\n binod.binod = BINOD\n\n binod.news = Top news headlines of current time\n\n binod.weather <place> = Real time weather of <place> (Replace <place> with the place whose weather you want to know)\n\n binod.wikipedia <search> = Searches the wikipedia for <search> (Again replace the <search> with your query)\n\n binod.joke = Call a random joke \n\n binod.corona = Get live status of confirmed corona cases of India \n\n binod.meme = Get a random meme \n\n binod.suggest <suggestion> = Suggest a new feature to be added to the bot \n\n"
+    help = "Hello, I am Binod, a bot made by Shravan. The following are the commands:\n\n binod.help = Show this help message\n\n binod.binod = BINOD\n\n binod.news = Top news headlines of the moment\n\n binod.weather <place> = Real time weather of <place> \n\n binod.wiki <search> = Searches the wikipedia for <search> \n\n binod.joke = Get a random joke \n\n binod.corona = Get live status of confirmed corona cases in India \n\n binod.meme = Get a random meme \n\n binod.suggest <suggestion> = Suggest a new feature to be added to the bot \n\n"
 
     if command.startswith('binod.help'):
         await message.channel.send(help)
@@ -92,31 +92,32 @@ async def on_message(message):
 
         except Exception as e:
             print(e)
-            await message.channel.send("Couldn't search that!")
+            await message.channel.send(f"Cannot search for a place named {query}!")
 
-    elif command.startswith("binod.wikipedia"):
+    elif command.startswith("binod.wiki"):
         try:
             await message.channel.send("Searching through the wikipedia for your query... Hang on...")
-            query = command.replace('binod.wikipedia', "")
+            query = command.replace('binod.wiki', "")
             query = query.lstrip()
             result = wikipedia.summary(query, sentences=2)
-            material = f"According to wikipedia...\n{result}"
+            material = f"According to wikipedia:\n{result}"
             await message.channel.send(material)
 
         except Exception as e:
             print(e)
-            await message.channel.send("Some error occurred. Sorry for your inconvenience!")
+            await message.channel.send("Some error occurred. Sorry for the inconvenience!")
 
     elif command.startswith("binod.corona"):
+        country = command.replace('binod.corona', '').lstrip().rstrip()
         r = requests.get(
-            f'https://api.covid19api.com/country/india/status/confirmed/live')
+            f'https://api.covid19api.com/country/{country}/status/confirmed/live')
 
         try:
             parser = json.loads(r.text)
             l = parser[::-1]
             today = (l[0])
             material = (
-                f"There are {today['Cases']} confirmed corona cases in India.")
+                f"There are {today['Cases']} confirmed corona cases in {country.capitalize()}.")
             await message.channel.send(material)
         except Exception as e:
             print(e)
@@ -167,7 +168,7 @@ async def on_message(message):
 
         except Exception as e:
             print(e)
-            await message.channel.send("Couldn't connect at the moment! Try again later!")
+            await message.channel.send("Couldn't connect at the moment! Try again later.")
 
     elif command.startswith("/exec"):
         try:
