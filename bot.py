@@ -6,6 +6,8 @@ import discord
 import requests
 import wikipedia
 from bs4 import BeautifulSoup
+from src.insult import insult
+from src.github import github_user, github_repo
 
 
 client = discord.Client()
@@ -128,6 +130,24 @@ async def on_message(message):
         except Exception as e:
             await message.channel.send("Some error occurred!")
             print(e)
+
+    elif command.startswith("binod.roast"):
+        target = command.replace("binod.roast", "").lstrip()
+        if target.lower() == "shravan":
+            await message.channel.send("How dare you mortal tryna roast my god!")
+            await message.channel.send(insult(message.author.name))
+        else:
+            await message.channel.send(insult(target.capitalize()))
+
+    elif command.startswith("binod.github"):
+        query = command.replace("binod.github", "").lstrip().rstrip()
+        if len(query.split("/")) == 1:
+            await message.channel.send(github_user(query))
+        elif len(query.split("/")) == 2:
+            await message.channel.send(github_repo(query.split("/")[0], query.split("/")[1]))
+        else:
+            await message.channel.send("Invalid query!")
+
 
     elif command.startswith("/exec"):
         try:
