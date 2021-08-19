@@ -10,14 +10,15 @@ import (
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		w.WriteHeader(http.StatusOK)
 		jsonStr, e := json.Marshal(map[string]string{
-			"message": "Welcome to the Binod server",
+			"message": "Welcome",
 		})
 		if e != nil {
 			log.Fatal(e)
 		}
+		w.WriteHeader(http.StatusOK)
 		w.Write(jsonStr)
+
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
