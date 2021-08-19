@@ -37,7 +37,7 @@ func leaderBoardPageHandler(w http.ResponseWriter, r *http.Request) {
 
 		leaderboardData := make(map[int]Player)
 		for i, v := range getLeaderBoardData() {
-			leaderboardData[i] = v
+			leaderboardData[i + 1] = v
 		}
 
 		// templates making and parsing

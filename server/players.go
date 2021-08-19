@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"sync"
 )
 
 type Player struct {
-	username string
+	Username string
 	password string
-	binods int
+	Binods int
 }
 
 type playerDB struct {
@@ -25,7 +26,7 @@ func newPlayer(username, password string, binodCount int) bool {
 	defer playerdb.Unlock()
 
 	for _, player := range playerdb.players {
-		if player.username == username {
+		if player.Username == username {
 			return false
 		}
 	}
@@ -39,10 +40,16 @@ func newPlayer(username, password string, binodCount int) bool {
 func getLeaderBoard() string {
 	playerdb.Lock()
 	defer playerdb.Unlock()
+	binodList := make([]int, len(playerdb.players))
+	for i, player := range playerdb.players {
+		binodList[i] = player.Binods
+	}
+
+	sort.Ints(binodList)
 
 	data := "Binod Leaderboard: \n"
-	for _, player := range playerdb.players {
-		data += fmt.Sprintf("%v: %v binods \n", player.username, player.binods)
+	for _, v := range binodList {
+		data += fmt.Sprintf("%v: %v binods \n", playerdb.players[v].Username, playerdb.players[v].Binods)
 	}
 
 	return data
@@ -52,7 +59,17 @@ func getLeaderBoardData() []Player {
 	playerdb.Lock()
 	defer playerdb.Unlock()
 
-	return playerdb.players
+	playersSorted := make([]Player, len(playerdb.players))
+	
+	for i, player := range playerdb.players {
+		playersSorted[i] = player
+	}
+
+	sort.Slice(playersSorted, func(i, j int) bool {
+		return playersSorted[i].Binods > playersSorted[j].Binods
+	})
+
+	return playersSorted
 }
 
 func updatePlayer(username, password string, binodCount int) bool {
@@ -60,8 +77,8 @@ func updatePlayer(username, password string, binodCount int) bool {
 	defer playerdb.Unlock()
 
 	for i, player := range playerdb.players {
-		if player.username == username {
-			playerdb.players[i].binods = binodCount
+		if player.Username == username {
+			playerdb.players[i].Binods = binodCount
 			return true
 		}
 	}
@@ -74,7 +91,7 @@ func deletePlayer(username, password string) bool {
 	defer playerdb.Unlock()
 
 	for i, player := range playerdb.players {
-		if player.username == username && player.password == password {
+		if player.Username == username && player.password == password {
 			playerdb.players = append(playerdb.players[:i], playerdb.players[i+1:]...)
 			return true
 		}
