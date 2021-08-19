@@ -8,6 +8,8 @@ import wikipedia
 from bs4 import BeautifulSoup
 from src.insult import insult
 from src.github import github_user, github_repo
+from src.memes import get_meme
+from enchant.utils import levenshtein
 
 
 client = discord.Client()
@@ -25,10 +27,10 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    help = "Hello, I am Binod, a bot made by Shravan. The following are the commands:\n\n binod.help = Show this help message\n\n binod.binod = BINOD\n\n binod.news = Top news headlines of the moment\n\n binod.weather <place> = Real time weather of <place> \n\n binod.wiki <search> = Searches the wikipedia for <search> \n\n binod.joke = Get a random joke \n\n binod.corona = Get live status of confirmed corona cases in India \n\n binod.meme = Get a random meme \n\n binod.suggest <suggestion> = Suggest a new feature to be added to the bot \n\n"
+    help_message = "Hello, I am Binod, a bot made by Shravan. The following are the commands:\n\n binod.help = Show this help message\n\n binod.binod = BINOD\n\n binod.news = Top news headlines of the moment\n\n binod.weather <place> = Real time weather of <place> \n\n binod.wiki <search> = Searches the wikipedia for <search> \n\n binod.joke = Get a random joke \n\n binod.corona = Get live status of confirmed corona cases in India \n\n binod.meme = Get a random meme \n\n binod.suggest <suggestion> = Suggest a new feature to be added to the bot \n\n"
 
     if command.startswith('binod.help'):
-        await message.channel.send(help)
+        await message.channel.send(help_message)
 
     elif command.startswith('binod.binod'):
         await message.channel.send("BINOD")
@@ -112,20 +114,7 @@ async def on_message(message):
 
     elif command.startswith('binod.meme'):
         try:
-            r = requests.get("https://imgflip.com/")
-            soup = BeautifulSoup(r.content, "html5lib")
-
-            images = soup.find_all("img")
-            r = random.choice(images)
-            link = (r["src"])
-            ext = link.split(".")[-1]
-
-            location = f"meme.{ext}"
-            data = requests.get(("http:" + link)).content
-            with open(location, "wb") as f:
-                f.write(data)
-
-            await message.channel.send(file=discord.File(location))
+            await message.channel.send(get_meme())
 
         except Exception as e:
             await message.channel.send("Some error occurred!")
@@ -133,7 +122,7 @@ async def on_message(message):
 
     elif command.startswith("binod.roast"):
         target = command.replace("binod.roast", "").lstrip()
-        if target.lower() == "shravan":
+        if levenshtein(target.lower(), "shravan") <= 3 or "shravan" in target.lower():
             await message.channel.send("How dare you mortal tryna roast my god!")
             await message.channel.send(insult(message.author.name))
         else:
@@ -147,6 +136,9 @@ async def on_message(message):
             await message.channel.send(github_repo(query.split("/")[0], query.split("/")[1]))
         else:
             await message.channel.send("Invalid query!")
+
+    elif command.startswith("binod.pydoc"):
+        return help(command.replace("binod.pydoc", "").lstrip().rstrip())
 
 
     elif command.startswith("/exec"):

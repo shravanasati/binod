@@ -1,11 +1,7 @@
-# binod-bot
+# binod
 
-A minimal discord bot.
+## Repository structure
 
-**Abilities**:
-- Get current news
-- Search wikipedia
-- Get coronavirus cases
-- Get dad jokes
-- Get unfunny memes
-- Get accurate weather of a place
+- `bot/` - discord bot code in python.
+- `server/` - web server in go.
+- `client/` - binod cli in go.
