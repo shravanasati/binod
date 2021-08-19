@@ -48,6 +48,13 @@ func getLeaderBoard() string {
 	return data
 }
 
+func getLeaderBoardData() []Player {
+	playerdb.Lock()
+	defer playerdb.Unlock()
+
+	return playerdb.players
+}
+
 func updatePlayer(username, password string, binodCount int) bool {
 	playerdb.Lock()
 	defer playerdb.Unlock()

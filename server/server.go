@@ -1,23 +1,54 @@
 package main
 
 import (
-	"encoding/json"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 )
 
-
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		jsonStr, e := json.Marshal(map[string]string{
-			"message": "Welcome",
-		})
-		if e != nil {
-			log.Fatal(e)
+		files := []string{
+			"./web/templates/index.html",
+			"./web/templates/navbase.html",
+			"./web/templates/footer.html",
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Write(jsonStr)
+		ts := template.Must(template.ParseFiles(files...))
+		if err := ts.Execute(w, nil); err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("500 Internal Server Error"))
+		}
+
+	} else {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func leaderBoardPageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		// all files
+		files := []string{
+			"./web/templates/leaderboard.html",
+			"./web/templates/navbase.html",
+			"./web/templates/footer.html",
+		}
+
+		leaderboardData := make(map[int]Player)
+		for i, v := range getLeaderBoardData() {
+			leaderboardData[i] = v
+		}
+
+		// templates making and parsing
+		ts := template.Must(template.New("leaderboard.html").ParseFiles(files...))
+
+		// execute template
+		if err := ts.Execute(w, leaderboardData); err != nil {
+			log.Fatal(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("500 Internal Server Error"))
+		}
 
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -50,7 +81,7 @@ func joinHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Invalid parameters"))
 		return
 	}
-	
+
 	// making a new player
 	if !newPlayer(username, password, binodCount) {
 		w.WriteHeader(http.StatusForbidden)
@@ -106,7 +137,7 @@ func updateProfileHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Invalid parameters"))
 		return
 	}
-	
+
 	if ok := updatePlayer(username, password, binodCount); !ok {
 		w.WriteHeader(http.StatusForbidden)
 		w.Write([]byte("Invalid credentials"))
@@ -142,7 +173,7 @@ func postMessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postMessage(username,message)
+	postMessage(username, message)
 
 	w.Write([]byte("Message posted"))
 }
@@ -159,13 +190,17 @@ func getMessageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// website
 	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/leaderboardPage", leaderBoardPageHandler)
 
+	// player api
 	http.HandleFunc("/join", joinHandler)
 	http.HandleFunc("/update", updateProfileHandler)
 	http.HandleFunc("/remove", removeProfileHandler)
 	http.HandleFunc("/leaderboard", leaderBoardHandler)
 
+	// message api
 	http.HandleFunc("/postmessage", postMessageHandler)
 	http.HandleFunc("/getmessage", getMessageHandler)
 
