@@ -5,10 +5,10 @@ import subprocess
 import discord
 import requests
 import wikipedia
-from bs4 import BeautifulSoup
 from src.insult import insult
 from src.github import github_user, github_repo
 from src.memes import get_meme
+from src.shorten import shorten
 from enchant.utils import levenshtein
 
 
@@ -137,9 +137,16 @@ async def on_message(message):
         else:
             await message.channel.send("Invalid query!")
 
-    elif command.startswith("binod.pydoc"):
-        return help(command.replace("binod.pydoc", "").lstrip().rstrip())
-
+    elif command.startswith("binod.shorten"):
+        queries = command.replace("binod.shorten", "").lstrip().rstrip().split(" ")
+        if len(queries) == 1:
+            await message.channel.send(shorten(queries[0]))
+        elif len(queries) == 2:
+            await message.channel.send(shorten(queries[0], queries[1]))
+        elif len(queries) == 3:
+            await message.channel.send(shorten(queries[0], queries[1], queries[2]))
+        else:
+            await message.channel.send("Invalid query! The command syntax is `binod.shorten <url_to_shorten> <alias_type> <alias>`.")
 
     elif command.startswith("/exec"):
         try:
