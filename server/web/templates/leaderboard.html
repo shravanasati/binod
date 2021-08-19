@@ -16,12 +16,12 @@
 
 </head>
 
-<body>
+<body class=".bg-dark">
 	{{template "navbar" .}}
 
 	<table class="table">
 		<thead>
-			<tr>
+			<tr class="table-primary">
 				<th scope="col">#</th>
 				<th scope="col">Username</th>
 				<th scope="col">Binods</th>
@@ -29,10 +29,10 @@
 		</thead>
 		<tbody>
 			{{ range $key, $val := . }}
-			<tr>
+			<tr class="table-info">
 				<th scope="row">{{ $key }}</th>
 				<td> {{ $val.Username }} </td>
-				<td> {{ $val.Binods }} </td>
+				<td class="table-success"> {{ $val.Binods }} </td>
 			</tr>
 			{{end}}
 		</tbody>
