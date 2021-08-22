@@ -19,6 +19,22 @@ client = discord.Client()
 async def on_ready():
     print('Bot has logged in as {0.user}'.format(client))
 
+def cembed(title="", description="", thumbnail=client.user.avatar_url_as, picture="", color=discord.Color.dark_theme()):
+    embed = discord.Embed()
+    if color != discord.Color.dark_theme():
+        embed = discord.Embed(color=discord.Color(value=color))
+    if title != "":
+        embed.title = title
+    if description != "":
+        embed.description = description
+    if thumbnail != "":
+        embed.set_thumbnail(url=thumbnail)
+    if picture != "":
+        embed.set_image(url=picture)
+    return embed
+
+color=discord.Color.from_rgb(100,230,160)
+
 
 @client.event
 async def on_message(message):
@@ -30,7 +46,7 @@ async def on_message(message):
     help_message = "Hello, I am Binod, a bot made by Shravan. The following are the commands:\n\n binod.help = Show this help message\n\n binod.binod = BINOD\n\n binod.news = Top news headlines of the moment\n\n binod.weather <place> = Real time weather of <place> \n\n binod.wiki <search> = Searches the wikipedia for <search> \n\n binod.joke = Get a random joke \n\n binod.corona = Get live status of confirmed corona cases in India \n\n binod.meme = Get a random meme \n\n binod.suggest <suggestion> = Suggest a new feature to be added to the bot \n\n"
 
     if command.startswith('binod.help'):
-        await message.channel.send(help_message)
+        await message.channel.send(embed=cembed(title="Help",description=help_message,color=color))
 
     elif command.startswith('binod.binod'):
         await message.channel.send("BINOD")
@@ -53,7 +69,7 @@ async def on_message(message):
                 a += 1
                 continue
 
-        await message.channel.send(string)
+        await message.channel.send(embed=cembed(title="News",description=string,color=color))
 
     elif command.startswith("binod.weather"):
         query = command.replace("binod.weather", "")
@@ -73,20 +89,20 @@ async def on_message(message):
 
         except Exception as e:
             print(e)
-            await message.channel.send(f"Cannot search for a place named {query}!")
+            await message.channel.send(embed=cembed(title="Weather",description=f"Cannot search for a place named {query}!",color=color))
 
     elif command.startswith("binod.wiki"):
         try:
-            await message.channel.send("Searching through the wikipedia for your query... Hang on...")
+            await message.channel.send(embed=cembed(description="Searching through the wikipedia for your query... Hang on...",color=color))
             query = command.replace('binod.wiki', "")
             query = query.lstrip()
             result = wikipedia.summary(query, sentences=2)
             material = f"According to wikipedia:\n{result}"
-            await message.channel.send(material)
+            await message.channel.send(embed=cembed(title="Wiki",description=material,color=color))
 
         except Exception as e:
             print(e)
-            await message.channel.send("Some error occurred. Sorry for the inconvenience!")
+            await message.channel.send(embed=cembed(title="Wiki",description="Some error occurred. Sorry for the inconvenience!",color=color))
 
     elif command.startswith("binod.corona"):
         country = command.replace('binod.corona', '').lstrip().rstrip()
@@ -99,7 +115,7 @@ async def on_message(message):
             today = (l[0])
             material = (
                 f"There are {today['Cases']} confirmed corona cases in {country.capitalize()}.")
-            await message.channel.send(material)
+            await message.channel.send(embed=cembed(title="Corona",description=material,color=color))
         except Exception as e:
             print(e)
             await message.channel.send("Couldn't do that at the moment!")
@@ -110,7 +126,7 @@ async def on_message(message):
         r = requests.get(url).text
         parser = json.loads(r)
         joke = parser['contents']['jokes'][0]['joke']['text']
-        await message.channel.send(f"Alright, here's a one:\n{joke}")
+        await message.channel.send(embed=cembed(title="Joke",description=f"Alright, here's a one:\n{joke}",color=color))
 
     elif command.startswith('binod.meme'):
         try:
