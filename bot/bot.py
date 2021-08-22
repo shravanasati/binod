@@ -19,7 +19,7 @@ client = discord.Client()
 async def on_ready():
     print('Bot has logged in as {0.user}'.format(client))
 
-def cembed(title="", description="", thumbnail=client.user.avatar_url_as, picture="", color=discord.Color.dark_theme()):
+def cembed(title="", description="", thumbnail=client.user.avatar_url_as(format="png"), picture="", color=discord.Color.dark_theme()):
     embed = discord.Embed()
     if color != discord.Color.dark_theme():
         embed = discord.Embed(color=discord.Color(value=color))
