@@ -8,6 +8,11 @@ import (
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		notFoundHandler(w)
+		return
+	}
+
 	if r.Method == "GET" {
 		files := []string{
 			"./web/templates/index.html",
@@ -26,6 +31,21 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func notFoundHandler(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNotFound)
+	files := []string{
+		"./web/templates/404.html",
+		"./web/templates/navbase.html",
+		"./web/templates/footer.html",
+	}
+	ts := template.Must(template.ParseFiles(files...))
+	if err := ts.Execute(w, nil); err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500 Internal Server Error"))
+	}
+}
+
 func leaderBoardPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		// all files
@@ -37,7 +57,7 @@ func leaderBoardPageHandler(w http.ResponseWriter, r *http.Request) {
 
 		leaderboardData := make(map[int]Player)
 		for i, v := range getLeaderBoardData() {
-			leaderboardData[i + 1] = v
+			leaderboardData[i+1] = v
 		}
 
 		// templates making and parsing
