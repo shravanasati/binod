@@ -7,9 +7,9 @@ import (
 )
 
 type Player struct {
-	Username string
-	password string
-	Binods int
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Binods   int    `json:"binods"`
 }
 
 type playerDB struct {
@@ -19,21 +19,21 @@ type playerDB struct {
 
 var playerdb playerDB
 
-// newPlayer adds a new player to the database if the username doesnt exist and returns a 
+// addPlayer adds a new player to the database if the username doesnt exist and returns a
 // boolean value of true if the username is unique.
-func newPlayer(username, password string, binodCount int) bool {
+func addPlayer(p *Player) (bool, string) {
 	playerdb.Lock()
 	defer playerdb.Unlock()
 
 	for _, player := range playerdb.players {
-		if player.Username == username {
-			return false
+		if player.Username == p.Username {
+			return false, "This username already exists! Try another one."
 		}
 	}
 
-	playerdb.players = append(playerdb.players, Player{username, password, binodCount})
+	playerdb.players = append(playerdb.players, *p)
 
-	return true
+	return true, "Welcome " + p.Username + "!"
 }
 
 // getLeaderBoard returns the player leaderboard.
@@ -60,7 +60,7 @@ func getLeaderBoardData() []Player {
 	defer playerdb.Unlock()
 
 	playersSorted := make([]Player, len(playerdb.players))
-	
+
 	for i, player := range playerdb.players {
 		playersSorted[i] = player
 	}
@@ -72,13 +72,13 @@ func getLeaderBoardData() []Player {
 	return playersSorted
 }
 
-func updatePlayer(username, password string, binodCount int) bool {
+func updatePlayer(p *Player) bool {
 	playerdb.Lock()
 	defer playerdb.Unlock()
 
 	for i, player := range playerdb.players {
-		if player.Username == username {
-			playerdb.players[i].Binods = binodCount
+		if player.Username == p.Username {
+			playerdb.players[i].Binods = p.Binods
 			return true
 		}
 	}
@@ -86,12 +86,12 @@ func updatePlayer(username, password string, binodCount int) bool {
 	return false
 }
 
-func deletePlayer(username, password string) bool {
+func deletePlayer(p *Player) bool {
 	playerdb.Lock()
 	defer playerdb.Unlock()
 
 	for i, player := range playerdb.players {
-		if player.Username == username && player.password == password {
+		if player.Username == p.Username && player.Password == p.Password {
 			playerdb.players = append(playerdb.players[:i], playerdb.players[i+1:]...)
 			return true
 		}

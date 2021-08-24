@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -85,63 +84,66 @@ func leaderBoardPageHandler(w http.ResponseWriter, r *http.Request) {
 
 func joinHandler(w http.ResponseWriter, r *http.Request) {
 	// check for http method
-	if r.Method != "POST" {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+	if end := checkForInvalidMethod("POST", r, w); end {
 		return
 	}
 
-	// retrieve request queries
-	username := r.URL.Query().Get("username")
-	password := r.URL.Query().Get("password")
-	binod := r.URL.Query().Get("binod")
-
-	// check for empty queries
-	if username == "" || password == "" || binod == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid parameters"))
+	player, end := decodeJSONToPlayer(r.Body, w)
+	if end {
 		return
 	}
 
-	// make sure binod is a number
-	binodCount, e := strconv.Atoi(binod)
-	if e != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid parameters"))
+	if checkForEmpty(player, w) {
 		return
 	}
 
-	// making a new player
-	if !newPlayer(username, password, binodCount) {
+	success, message := addPlayer(player)
+	if !success {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("Username already exists"))
-		return
+	} else {
+		w.WriteHeader(http.StatusOK)
 	}
 
-	w.Write([]byte("Welcome " + username))
+	var resp *PlayerResponse
+	if success {
+		resp = makeResponse(success, message, map[string]interface{}{
+			"username": player.Username,
+			"binods":   player.Binods,
+		})
+	} else {
+		resp = makeResponse(success, message, map[string]interface{}{})
+	}
+
+	w.Write(jsonifyResponse(resp))
 }
 
 func removeProfileHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "DELETE" {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-	username := r.URL.Query().Get("username")
-	password := r.URL.Query().Get("password")
-
-	if username == "" || password == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid parameters"))
+	if end := checkForInvalidMethod("DELETE", r, w); end {
 		return
 	}
 
-	if ok := deletePlayer(username, password); !ok {
+	player, end := decodeJSONToPlayer(r.Body, w)
+	if end {
+		return
+	}
+
+	if checkForEmpty(player, w) {
+		return
+	}
+
+	if ok := deletePlayer(player); !ok {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("Username not found or invalid credentials"))
+		resp := makeResponse(false, "Username or password is incorrect.", map[string]interface{}{})
+		w.Write(jsonifyResponse(resp))
 		return
 	}
 
-	w.WriteHeader(http.StatusForbidden)
-	w.Write([]byte("Invalid credentials"))
+	w.WriteHeader(http.StatusOK)
+	resp := makeResponse(true, "Successfully deleted player.", map[string]interface{}{
+		"username": player.Username,
+		"binods":   player.Binods,
+	})
+	w.Write(jsonifyResponse(resp))
 }
 
 func updateProfileHandler(w http.ResponseWriter, r *http.Request) {
@@ -153,20 +155,9 @@ func updateProfileHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.URL.Query().Get("password")
 	binod := r.URL.Query().Get("binod")
 
-	if username == "" || password == "" || binod == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid parameters"))
-		return
-	}
 
-	binodCount, e := strconv.Atoi(binod)
-	if e != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid parameters"))
-		return
-	}
 
-	if ok := updatePlayer(username, password, binodCount); !ok {
+	if ok := updatePlayer(&player); !ok {
 		w.WriteHeader(http.StatusForbidden)
 		w.Write([]byte("Invalid credentials"))
 		return
@@ -237,5 +228,5 @@ func main() {
 		port = "8080"
 	}
 	log.Println("Listening on port " + port)
-	log.Fatal(http.ListenAndServe(":" + port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
