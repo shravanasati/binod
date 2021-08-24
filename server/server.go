@@ -15,13 +15,15 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == "GET" {
-		files := []string{
-			"./web/templates/index.html",
-			"./web/templates/navbase.html",
-			"./web/templates/footer.html",
-		}
-		ts := template.Must(template.ParseFiles(files...))
-		if err := ts.Execute(w, nil); err != nil {
+		// files := []string{
+		// 	"./web/templates/index.html",
+		// 	"./web/templates/navbase.html",
+		// 	"./web/templates/footer.html",
+		// }
+		tmpl := template.Must(template.New("404.html").Parse(indexTemplate))
+		template.Must(tmpl.Parse(footerTemplate))
+		template.Must(tmpl.Parse(navbaseTemplate))
+		if err := tmpl.Execute(w, nil); err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("500 Internal Server Error"))
@@ -34,13 +36,16 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func notFoundHandler(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNotFound)
-	files := []string{
-		"./web/templates/404.html",
-		"./web/templates/navbase.html",
-		"./web/templates/footer.html",
-	}
-	ts := template.Must(template.ParseFiles(files...))
-	if err := ts.Execute(w, nil); err != nil {
+	// files := []string{
+	// 	"./web/templates/404.html",
+	// 	"./web/templates/navbase.html",
+	// 	"./web/templates/footer.html",
+	// }
+	tmpl := template.Must(template.New("404.html").Parse(notFoundTemplate))
+	template.Must(tmpl.Parse(footerTemplate))
+	template.Must(tmpl.Parse(navbaseTemplate))
+
+	if err := tmpl.Execute(w, nil); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("500 Internal Server Error"))
@@ -50,11 +55,11 @@ func notFoundHandler(w http.ResponseWriter) {
 func leaderBoardPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		// all files
-		files := []string{
-			"./web/templates/leaderboard.html",
-			"./web/templates/navbase.html",
-			"./web/templates/footer.html",
-		}
+		// files := []string{
+		// 	"./web/templates/leaderboard.html",
+		// 	"./web/templates/navbase.html",
+		// 	"./web/templates/footer.html",
+		// }
 
 		leaderboardData := make(map[int]Player)
 		for i, v := range getLeaderBoardData() {
@@ -62,10 +67,12 @@ func leaderBoardPageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// templates making and parsing
-		ts := template.Must(template.New("leaderboard.html").ParseFiles(files...))
+		tmpl := template.Must(template.New("leaderboard.html").Parse(leaderboardTemplate))
+		template.Must(tmpl.Parse(footerTemplate))
+		template.Must(tmpl.Parse(navbaseTemplate))
 
 		// execute template
-		if err := ts.Execute(w, leaderboardData); err != nil {
+		if err := tmpl.Execute(w, leaderboardData); err != nil {
 			log.Fatal(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("500 Internal Server Error"))
