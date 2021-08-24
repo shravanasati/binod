@@ -193,10 +193,12 @@ async def on_message(message):
                 actual_code += i+"\n"
 
         resp = rce.execute_code(language, actual_code)
-        result = f"{message.author.mention}, here's your code execution result: \n"
-        result += f"Language: {resp.language} \n"
-        result += f"Exit Code: {resp.exit_code} \n"
-        result += f"Output:\n```{resp.output}```"
+        result = ""
+        if resp.exit_code == 0:
+            result = f":white_check_mark: {message.author.mention}, the code executed successfully!\n"
+        else:
+            result = f":x: {message.author.mention}, the code didn't execute successfully!\n"
+        result += f"```{resp.output}```"
         await message.channel.send(result)
 
     elif command.startswith("binod.langs"):
@@ -205,8 +207,7 @@ async def on_message(message):
         for i in results:
             lang = i["language"]
             version = i["version"]
-            alias = ",".join(i["aliases"])
-            resp_text += f"{lang},{alias} - {version}\n"
+            resp_text += f"{lang} v{version}\n"
 
         await message.channel.send(resp_text)
 
