@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -224,5 +225,9 @@ func main() {
 	http.HandleFunc("/postmessage", postMessageHandler)
 	http.HandleFunc("/getmessage", getMessageHandler)
 
-	log.Fatal(http.ListenAndServe(":6969", nil))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Fatal(http.ListenAndServe(":" + port, nil))
 }
