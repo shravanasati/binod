@@ -19,7 +19,7 @@ type playerDB struct {
 
 var playerdb playerDB
 
-// addPlayer adds a new player to the database if the username doesnt exist and returns a
+// addPlayer adds a new player to the database if the username doesn't exist and returns a
 // boolean value of true if the username is unique.
 func addPlayer(p *Player) (bool, string) {
 	playerdb.Lock()
@@ -77,8 +77,8 @@ func updatePlayer(p *Player) bool {
 	defer playerdb.Unlock()
 
 	for i, player := range playerdb.players {
-		if player.Username == p.Username {
-			playerdb.players[i].Binods = p.Binods
+		if player.Username == p.Username  && player.Password == p.Password {
+			playerdb.players[i] = *p
 			return true
 		}
 	}
@@ -98,4 +98,17 @@ func deletePlayer(p *Player) bool {
 	}
 
 	return false
+}
+
+func getPlayer(username string) (*Player, error) {
+	playerdb.Lock()
+	defer playerdb.Unlock()
+
+	for _, player := range playerdb.players {
+		if player.Username == username {
+			return &player, nil
+		}
+	}
+
+	return &Player{}, fmt.Errorf("Player with username '%s' not found.", username)
 }

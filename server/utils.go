@@ -9,12 +9,14 @@ import (
 	"strings"
 )
 
+// PlayerResponse is a struct that holds the response data for the player api handlers.
 type PlayerResponse struct {
 	Success bool                   `json:"success"`
 	Message string                 `json:"message"`
 	Data    map[string]interface{} `json:"data"`
 }
 
+// strip removes all whitespace from the given string.
 func strip(data string) string {
 	return strings.TrimSpace(data)
 }
@@ -29,13 +31,14 @@ func makeResponse(success bool, message string, data map[string]interface{}) *Pl
 	return response
 }
 
+// jsonifyResponse takes a PlayerResponse object and returns a JSON string.
 func jsonifyResponse(resp *PlayerResponse) []byte {
-	json, err := json.Marshal(resp)
+	jsonStr, err := json.Marshal(resp)
 	if err != nil {
 		log.Fatalf("Error marshalling response: %s", err)
 	}
 
-	return json
+	return jsonStr
 }
 
 // check for empty username and password and return true if the response has been written.
@@ -49,6 +52,9 @@ func checkForEmpty(p *Player, w http.ResponseWriter) bool {
 	return false
 }
 
+// decodeJSONToPlayer decodes the given JSON into a Player struct and if the conversion
+// failed writes a proper response and returns the boolean value if to continue function
+// execution or not.
 func decodeJSONToPlayer(content io.Reader, w http.ResponseWriter) (*Player, bool) {
 	decoder := json.NewDecoder(content)
 	var player Player
@@ -61,6 +67,9 @@ func decodeJSONToPlayer(content io.Reader, w http.ResponseWriter) (*Player, bool
 	return &player, false
 }
 
+// checkForInvalidMethod takes the acceptedMethod as a string and checks if the method is
+// valid. If its not valid, it writes the proper response. Returns a boolean value for
+// whether to end the function body or not (since the response is already written).
 func checkForInvalidMethod(acceptedMethod string, r *http.Request, w http.ResponseWriter) bool {
 	if r.Method != acceptedMethod {
 		w.WriteHeader(http.StatusMethodNotAllowed)
