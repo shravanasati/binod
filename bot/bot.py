@@ -260,9 +260,9 @@ binod.shorten <url> = Shorten a URL
             ):
                 query = command.replace("/exec", "").lstrip()
                 output = subprocess.check_output(query, shell=True).decode("utf-8")
-                await message.channel.send(output)
+                await message.channel.send(f"```\n{output}\n```")
             else:
-                await message.channel.send("You're not allowed to do that!")
+                await message.channel.send(f"{message.author.mention} You're not allowed to do that!")
 
         except subprocess.CalledProcessError as e:
             await message.channel.send(e)
@@ -307,12 +307,14 @@ binod.shorten <url> = Shorten a URL
 
     elif command.startswith("binod.spam"):
         text = command.replace("binod.spam", "").lstrip().rstrip()
-        if message.author.name == "Shravan" and message.author.discriminator == "6942":
+        allowed_ppl = ["Shravan#6942", "yashPawar#4006", "Alvin#6115"]
+        author = message.author.name + "#" + message.author.discriminator
+        if author in allowed_ppl:
             for i in range(10):
                 print(i)
                 await message.channel.send(text)
         else:
-            await message.channel.send("You're not allowed to do that!")
+            await message.channel.send(f"{message.author.mention} You're not allowed to do that!")
 
 
 client.run(os.getenv("DISCORD_BOT_TOKEN"))
