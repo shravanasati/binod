@@ -11,6 +11,7 @@ class PistonResponse:
     """
     Piston API response class.
     """
+
     language: str
     exit_code: int
     output: str
@@ -35,11 +36,13 @@ class CodeExecutor:
             data = json.loads(r.text)
             runtimes: List[Dict[str, Union[str, List[str]]]] = []
             for langs in data:
-                runtimes.append({
-                    "language": langs["language"],
-                    "version": langs["version"],
-                    "aliases": [i for i in langs["aliases"]]
-                })
+                runtimes.append(
+                    {
+                        "language": langs["language"],
+                        "version": langs["version"],
+                        "aliases": [i for i in langs["aliases"]],
+                    }
+                )
 
             return runtimes
 
@@ -59,7 +62,9 @@ class CodeExecutor:
             aliases = [i for sublist in _aliases for i in sublist]
 
             if language not in all_langs and language not in aliases:
-                return PistonResponse(language, -1, f"Language {language} is not supported.")
+                return PistonResponse(
+                    language, -1, f"Language {language} is not supported."
+                )
 
             for runtime in self.runtimes:
                 if runtime["language"] == language or language in runtime["aliases"]:
@@ -67,15 +72,19 @@ class CodeExecutor:
                     break
 
             else:
-                return PistonResponse(language, -1, f"Language {language} is not supported.")
+                return PistonResponse(
+                    language, -1, f"Language {language} is not supported."
+                )
 
             payload = {
                 "language": language,
                 "version": version,
-                "files": [{
-                    "name": "prog",
-                    "content": code,
-                }]
+                "files": [
+                    {
+                        "name": "prog",
+                        "content": code,
+                    }
+                ],
             }
 
             resp = requests.post(execute_url, json=payload)
@@ -88,7 +97,9 @@ class CodeExecutor:
                 return PistonResponse(language, run_data["code"], run_data["output"])
 
             else:
-                return PistonResponse(language, -1, f"Internal error: {resp.status_code}")
+                return PistonResponse(
+                    language, -1, f"Internal error: {resp.status_code}"
+                )
 
         except Exception as e:
             traceback.print_exception(e)

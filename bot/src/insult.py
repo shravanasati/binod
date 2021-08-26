@@ -11,7 +11,7 @@ def insult(name: str) -> str:
         if data["error"]:
             raise Exception("Error: {}".format(data))
 
-        return data['insult']
+        return data["insult"]
 
     except Exception as e:
         print(e)
