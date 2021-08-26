@@ -16,24 +16,13 @@ from enchant.utils import levenshtein
 client = discord.Client()
 rce = CodeExecutor()
 
+
 @client.event
 async def on_ready():
     print('Bot has logged in as {0.user}'.format(client))
 
 
-# def cembed(title="", description="", thumbnail=client.user.avatar_url_as(format="png"), picture="", color=discord.Color.dark_theme()):
-#     embed = discord.Embed()
-#     if color != discord.Color.dark_theme():
-#         embed = discord.Embed(color=discord.Color(value=color))
-#     if title != "":
-#         embed.title = title
-#     if description != "":
-#         embed.description = description
-#     if thumbnail != "":
-#         embed.set_thumbnail(url=thumbnail)
-#     if picture != "":
-#         embed.set_image(url=picture)
-#     return embed
+
 
 
 color = discord.Color.from_rgb(100, 230, 160)
@@ -41,12 +30,30 @@ color = discord.Color.from_rgb(100, 230, 160)
 
 @client.event
 async def on_message(message):
+
+    def cembed(title="", description="", thumbnail=client.user.avatar_url_as(format="png"), picture="", color=discord.Color.dark_theme()):
+        embed = discord.Embed(title=title, description=description, color=color, thumbnail=thumbnail)
+        return embed
+
     command = message.content.lower()
 
     if message.author == client.user:
         return
 
-    help_message = "Hello, I am Binod, a bot made by Shravan. The following are the commands:\n\n binod.help = Show this help message\n\n binod.binod = BINOD\n\n binod.news = Top news headlines of the moment\n\n binod.weather <place> = Real time weather of <place> \n\n binod.wiki <search> = Searches the wikipedia for <search> \n\n binod.joke = Get a random joke \n\n binod.corona = Get live status of confirmed corona cases in India \n\n binod.meme = Get a random meme \n\n binod.suggest <suggestion> = Suggest a new feature to be added to the bot \n\n"
+    help_message = '''
+Hello, I am Binod. The following are the commands:
+binod.help = Show this help message
+binod.binod = BINOD 
+binod.news = Top news headlines of the moment
+binod.weather <place> = Real time weather of <place>  
+binod.wiki <search> =Searches the wikipedia for <search>  
+binod.joke = Get a random joke  
+binod.corona = Get live status of confirmed corona cases in India  
+binod.meme = Get a random meme  
+binod.roast <object> = Roast <object>
+binod.github <username>/<repo> = Get GitHub stats for a user or a repo
+binod.shorten <url> = Shorten a URL
+'''
 
     if command.startswith('binod.help'):
         await message.channel.send(embed=cembed(title="Help", description=help_message, color=color))
@@ -89,8 +96,9 @@ async def on_message(message):
             current_weather = a.get('current')
             condition = current_weather['condition']
             text = condition['text']
+            description = f"The current temperature in {query} is {current_weather['temp_c']}. The weather condition in {query} is {text.lower()}."
 
-            await message.channel.send(f"The current temperature in {query} is {current_weather['temp_c']}. The weather condition in {query} is {text.lower()}.")
+            await message.channel.send(embed = cembed(title=f"Weather of {query}", description=description, color=color))
 
         except Exception as e:
             print(e)
@@ -144,29 +152,37 @@ async def on_message(message):
     elif command.startswith("binod.roast"):
         target = command.replace("binod.roast", "").lstrip()
         if levenshtein(target.lower(), "shravan") <= 3 or "shravan" in target.lower():
-            await message.channel.send("How dare you mortal tryna roast my god!")
+            await message.channel.send("How dare you mortal tryna roast my senpai!")
             await message.channel.send(insult(message.author.name))
         else:
             await message.channel.send(insult(target.capitalize()))
 
     elif command.startswith("binod.github"):
         query = command.replace("binod.github", "").lstrip().rstrip()
+
         if len(query.split("/")) == 1:
-            await message.channel.send(github_user(query))
+            await message.channel.send(embed=cembed(title=f"GitHub Stats for {query}", description=github_user(query), color=color))
+
         elif len(query.split("/")) == 2:
-            await message.channel.send(github_repo(query.split("/")[0], query.split("/")[1]))
+            username = query.split("/")[0]
+            repo = query.split("/")[1]
+
+            await message.channel.send(embed=cembed(title=f"GitHub Stats for {query}", description=github_repo(username, repo), color=color))
         else:
-            await message.channel.send("Invalid query!")
+            await message.channel.send(embed=cembed(title="GitHub Stats", description="Invalid query!", color=color))
 
     elif command.startswith("binod.shorten"):
         queries = command.replace(
             "binod.shorten", "").lstrip().rstrip().split(" ")
         if len(queries) == 1:
-            await message.channel.send(shorten(queries[0]))
+            e = cembed(title="Shorten", description=f"{shorten(queries[0])}", color=color)
+            await message.channel.send(embed = e)
         elif len(queries) == 2:
-            await message.channel.send(shorten(queries[0], queries[1]))
+            e = cembed(title="Shorten", description=f"{shorten(queries[0], queries[1])}", color=color)
+            await message.channel.send(embed=e)
         elif len(queries) == 3:
-            await message.channel.send(shorten(queries[0], queries[1], queries[2]))
+            e = cembed(title="Shorten", description=f"{shorten(queries[0], queries[1], queries[2])}", color=color)
+            await message.channel.send(embed=e)
         else:
             await message.channel.send("Invalid query! The command syntax is `binod.shorten <url_to_shorten> <alias_type> <alias>`.")
 
@@ -199,7 +215,7 @@ async def on_message(message):
         else:
             result = f":x: {message.author.mention}, the code didn't execute successfully!\n"
         result += f"```{resp.output}```"
-        await message.channel.send(result)
+        await message.channel.send(embed = cembed(title="Code Executed", description=result, color=color))
 
     elif command.startswith("binod.langs"):
         results = rce.runtimes
@@ -209,7 +225,16 @@ async def on_message(message):
             version = i["version"]
             resp_text += f"{lang} v{version}\n"
 
-        await message.channel.send(resp_text)
+        await message.channel.send(embed = cembed(title="Supported Languages", description=resp_text, color=color))
+
+    elif command.startswith("binod.spam"):
+        text = command.replace("binod.spam", "").lstrip().rstrip()
+        if message.author.name == "Shravan" and message.author.discriminator == "6942":
+            for i in range(10):
+                print(i)
+                await message.channel.send(text)
+        else:
+            await message.channel.send("You're not allowed to do that!")
 
 
 client.run(os.getenv("DISCORD_BOT_TOKEN"))

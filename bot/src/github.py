@@ -7,8 +7,7 @@ def github_user(username:str) -> str:
 	try:
 		r.raise_for_status()
 		data = json.loads(r.text)
-		answer_text = "GitHub stats for {}\n".format(data["login"])
-		answer_text += "-" * (len(answer_text))
+		answer_text = ""
 		answer_text += "\n"
 		answer_text += "Name: {}\n".format(data["name"])
 		answer_text += "Avatar: {}\n".format(data["avatar_url"])
@@ -30,9 +29,7 @@ def github_repo(username:str, repo:str) -> str:
 	try:
 		r.raise_for_status()
 		data = json.loads(r.text)
-		answer_text = "GitHub stats for {}/{}\n".format(username, repo)
-		answer_text += "-" * (len(answer_text))
-		answer_text += "\n"
+		answer_text = ""
 		answer_text += "Repo name: {}\n".format(data["name"])
 		answer_text += "Owner name: {}\n".format(data["owner"]["login"])
 		answer_text += "Language: {}\n".format(data["language"])
