@@ -56,20 +56,18 @@ func getLeaderBoard() string {
 }
 
 func getLeaderBoardData() []Player {
+	fmt.Println("Received request for leaderboard data...")
 	playerdb.Lock()
 	defer playerdb.Unlock()
 
-	playersSorted := make([]Player, len(playerdb.players))
 
-	for i, player := range playerdb.players {
-		playersSorted[i] = player
-	}
-
-	sort.Slice(playersSorted, func(i, j int) bool {
-		return playersSorted[i].Binods > playersSorted[j].Binods
+	fmt.Println("Sorting...")
+	sort.Slice(playerdb.players, func(i, j int) bool {
+		return playerdb.players[i].Binods > playerdb.players[j].Binods
 	})
 
-	return playersSorted
+	fmt.Println("Done.")
+	return playerdb.players
 }
 
 func updatePlayer(p *Player) bool {
