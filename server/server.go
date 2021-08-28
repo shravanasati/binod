@@ -111,12 +111,12 @@ func joinPlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// making response
 	var resp *PlayerResponse
 	if success {
-		resp = makeResponse(success, message, map[string]interface{}{
+		resp = makePlayerResponse(success, message, map[string]interface{}{
 			"username": player.Username,
 			"binods":   player.Binods,
 		})
 	} else {
-		resp = makeResponse(success, message, map[string]interface{}{})
+		resp = makePlayerResponse(success, message, map[string]interface{}{})
 	}
 
 	w.Write(jsonifyResponse(resp))
@@ -131,7 +131,7 @@ func getPlayerHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
 	if strip(username) == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		resp := makeResponse(false, "Username is required.", map[string]interface{}{})
+		resp := makePlayerResponse(false, "Username is required.", map[string]interface{}{})
 		w.Write(jsonifyResponse(resp))
 		return
 	}
@@ -140,13 +140,13 @@ func getPlayerHandler(w http.ResponseWriter, r *http.Request) {
 	player, err := getPlayer(username)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		resp := makeResponse(false, err.Error(), map[string]interface{}{})
+		resp := makePlayerResponse(false, err.Error(), map[string]interface{}{})
 		w.Write(jsonifyResponse(resp))
 		return
 	}
 
 	// making response
-	resp := makeResponse(true, fmt.Sprintf("A player with username '%s' found.", username), map[string]interface{}{
+	resp := makePlayerResponse(true, fmt.Sprintf("A player with username '%s' found.", username), map[string]interface{}{
 		"username": player.Username,
 		"binods":   player.Binods,
 	})
@@ -175,14 +175,14 @@ func removePlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// delete a player from the database
 	if ok := deletePlayer(player); !ok {
 		w.WriteHeader(http.StatusForbidden)
-		resp := makeResponse(false, "Username or password is incorrect.", map[string]interface{}{})
+		resp := makePlayerResponse(false, "Username or password is incorrect.", map[string]interface{}{})
 		w.Write(jsonifyResponse(resp))
 		return
 	}
 
 	// making response
 	w.WriteHeader(http.StatusOK)
-	resp := makeResponse(true, "Successfully deleted player.", map[string]interface{}{
+	resp := makePlayerResponse(true, "Successfully deleted player.", map[string]interface{}{
 		"username": player.Username,
 		"binods":   player.Binods,
 	})
@@ -209,14 +209,14 @@ func updatePlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// delete a player from the database
 	if ok := updatePlayer(player); !ok {
 		w.WriteHeader(http.StatusForbidden)
-		resp := makeResponse(false, "Username or password is incorrect.", map[string]interface{}{})
+		resp := makePlayerResponse(false, "Username or password is incorrect.", map[string]interface{}{})
 		w.Write(jsonifyResponse(resp))
 		return
 	}
 
 	// making response
 	w.WriteHeader(http.StatusOK)
-	resp := makeResponse(true, "Successfully updated player.", map[string]interface{}{
+	resp := makePlayerResponse(true, "Successfully updated player.", map[string]interface{}{
 		"username": player.Username,
 		"binods":   player.Binods,
 	})
@@ -224,13 +224,28 @@ func updatePlayerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func leaderBoardHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+	if end := checkForInvalidMethod("GET", r, w); end {
 		return
 	}
-	data := getLeaderBoard()
+
+	// getting leaderboard data
+	leaderboard := getLeaderBoardData()
+	data := make(map[int]interface{})
+	for i, p := range leaderboard {
+		data[i + 1] = map[string]interface{}{
+			"username": p.Username,
+			"binods":   p.Binods,
+		}
+	}
+
+	// making response
+	resp := &LeaderboardResponse{
+		Success: true,
+		Data:    data,
+		Message: "Successfully retrieved leaderboard.",
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(data))
+	w.Write(jsonifyResponse(resp))
 }
 
 func postMessageHandler(w http.ResponseWriter, r *http.Request) {

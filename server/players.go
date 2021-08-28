@@ -36,24 +36,6 @@ func addPlayer(p *Player) (bool, string) {
 	return true, "Welcome " + p.Username + "!"
 }
 
-// getLeaderBoard returns the player leaderboard.
-func getLeaderBoard() string {
-	playerdb.Lock()
-	defer playerdb.Unlock()
-	binodList := make([]int, len(playerdb.players))
-	for i, player := range playerdb.players {
-		binodList[i] = player.Binods
-	}
-
-	sort.Ints(binodList)
-
-	data := "Binod Leaderboard: \n"
-	for _, v := range binodList {
-		data += fmt.Sprintf("%v: %v binods \n", playerdb.players[v].Username, playerdb.players[v].Binods)
-	}
-
-	return data
-}
 
 func getLeaderBoardData() []Player {
 	fmt.Println("Received request for leaderboard data...")

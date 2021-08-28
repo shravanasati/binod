@@ -199,3 +199,4 @@ cython_debug/
 
 meme.jpg
 tmp/
+.vscode/

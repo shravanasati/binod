@@ -16,12 +16,18 @@ type PlayerResponse struct {
 	Data    map[string]interface{} `json:"data"`
 }
 
+type LeaderboardResponse struct {
+	Success bool                `json:"success"`
+	Message string              `json:"message"`
+	Data    map[int]interface{} `json:"data"`
+}
+
 // strip removes all whitespace from the given string.
 func strip(data string) string {
 	return strings.TrimSpace(data)
 }
 
-func makeResponse(success bool, message string, data map[string]interface{}) *PlayerResponse {
+func makePlayerResponse(success bool, message string, data map[string]interface{}) *PlayerResponse {
 	response := &PlayerResponse{
 		Success: success,
 		Message: message,
@@ -32,7 +38,7 @@ func makeResponse(success bool, message string, data map[string]interface{}) *Pl
 }
 
 // jsonifyResponse takes a PlayerResponse object and returns a JSON string.
-func jsonifyResponse(resp *PlayerResponse) []byte {
+func jsonifyResponse(resp interface{}) []byte {
 	jsonStr, err := json.Marshal(resp)
 	if err != nil {
 		log.Fatalf("Error marshalling response: %s", err)
@@ -45,7 +51,7 @@ func jsonifyResponse(resp *PlayerResponse) []byte {
 func checkForEmpty(p *Player, w http.ResponseWriter) bool {
 	if strip(p.Username) == "" || strip(p.Password) == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		resp := makeResponse(false, "Username or password cannot be empty.", map[string]interface{}{})
+		resp := makePlayerResponse(false, "Username or password cannot be empty.", map[string]interface{}{})
 		w.Write(jsonifyResponse(resp))
 		return true
 	}
@@ -60,7 +66,7 @@ func decodeJSONToPlayer(content io.Reader, w http.ResponseWriter) (*Player, bool
 	var player Player
 	if err := decoder.Decode(&player); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		resp := makeResponse(false, "Invalid JSON object.", map[string]interface{}{})
+		resp := makePlayerResponse(false, "Invalid JSON object.", map[string]interface{}{})
 		w.Write(jsonifyResponse(resp))
 		return nil, true
 	}
@@ -74,7 +80,7 @@ func checkForInvalidMethod(acceptedMethod string, r *http.Request, w http.Respon
 	if r.Method != acceptedMethod {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 
-		resp := makeResponse(false, fmt.Sprintf("Method '%s' not allowed. The only valid HTTP method for this endpoint is '%s'", r.Method, acceptedMethod), map[string]interface{}{})
+		resp := makePlayerResponse(false, fmt.Sprintf("Method '%s' not allowed. The only valid HTTP method for this endpoint is '%s'", r.Method, acceptedMethod), map[string]interface{}{})
 		w.Write(jsonifyResponse(resp))
 		return true
 	}
