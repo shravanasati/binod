@@ -8,7 +8,7 @@ import (
 )
 
 type message struct {
-	username string
+	username    string
 	usermessage string
 }
 
@@ -37,6 +37,6 @@ func getMessage() string {
 		return "No messages..."
 	}
 
-	randomMessageObj :=  messagedb.messages[rand.Intn(len(messagedb.messages))]
+	randomMessageObj := messagedb.messages[rand.Intn(len(messagedb.messages))]
 	return fmt.Sprintf("%s: %s", randomMessageObj.username, randomMessageObj.usermessage)
 }

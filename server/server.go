@@ -232,7 +232,7 @@ func leaderBoardHandler(w http.ResponseWriter, r *http.Request) {
 	leaderboard := getLeaderBoardData()
 	data := make(map[int]interface{})
 	for i, p := range leaderboard {
-		data[i + 1] = map[string]interface{}{
+		data[i+1] = map[string]interface{}{
 			"username": p.Username,
 			"binods":   p.Binods,
 		}

@@ -36,12 +36,10 @@ func addPlayer(p *Player) (bool, string) {
 	return true, "Welcome " + p.Username + "!"
 }
 
-
 func getLeaderBoardData() []Player {
 	fmt.Println("Received request for leaderboard data...")
 	playerdb.Lock()
 	defer playerdb.Unlock()
-
 
 	fmt.Println("Sorting...")
 	sort.Slice(playerdb.players, func(i, j int) bool {
@@ -57,7 +55,7 @@ func updatePlayer(p *Player) bool {
 	defer playerdb.Unlock()
 
 	for i, player := range playerdb.players {
-		if player.Username == p.Username  && player.Password == p.Password {
+		if player.Username == p.Username && player.Password == p.Password {
 			playerdb.players[i] = *p
 			return true
 		}
