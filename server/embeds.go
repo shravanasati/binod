@@ -16,3 +16,6 @@ var navbaseTemplate string
 
 //go:embed web/templates/404.html
 var notFoundTemplate string
+
+//go:embed web/templates/signup.html
+var signUpTemplate string

@@ -83,6 +83,23 @@ func leaderBoardPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func registerPageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	tmpl := template.Must(template.New("login.html").Parse(signUpTemplate))
+	template.Must(tmpl.Parse(footerTemplate))
+	template.Must(tmpl.Parse(navbaseTemplate))
+
+	if err := tmpl.Execute(w, nil); err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500 Internal Server Error"))
+	}
+}
+
 func joinPlayerHandler(w http.ResponseWriter, r *http.Request) {
 	// check for http method
 	if end := checkForInvalidMethod("POST", r, w); end {
@@ -283,6 +300,7 @@ func main() {
 	// website
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/leaderboardPage", leaderBoardPageHandler)
+	http.HandleFunc("/registerPage", registerPageHandler)
 
 	// player api
 	http.HandleFunc("/join", joinPlayerHandler)

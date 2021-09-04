@@ -24,25 +24,31 @@ async def on_ready():
 
 color = discord.Color.from_rgb(100, 230, 160)
 
-async def pa(embeds,ctx):
-    message=await ctx.send(embed=embeds[0])
-    pag=0
+
+async def paginate(embeds, ctx):
+    message = await ctx.send(embed=embeds[0])
+    pag = 0
     await message.add_reaction("◀️")
     await message.add_reaction("▶️")
-    def check(reaction, user):          
-      return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
+
+    def check(reaction, user):
+        return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
+
     while True:
-      try:
-          reaction, user= await client.wait_for("reaction_add", timeout=360, check=check)
-          #await message.remove_reaction(reaction, user)
-          if str(reaction.emoji) == "▶️" and pag+1!=len(embeds):
-              pag+=1
-              await message.edit(embed=embeds[pag])
-          elif str(reaction.emoji) == "◀️" and pag!=0:
-              pag-=1
-              await message.edit(embed=embeds[pag])
-      except asyncio.TimeoutError:
-         break
+        try:
+            reaction, user = await client.wait_for(
+                "reaction_add", timeout=360, check=check
+            )
+            # await message.remove_reaction(reaction, user)
+            if str(reaction.emoji) == "▶️" and pag + 1 != len(embeds):
+                pag += 1
+                await message.edit(embed=embeds[pag])
+            elif str(reaction.emoji) == "◀️" and pag != 0:
+                pag -= 1
+                await message.edit(embed=embeds[pag])
+        except asyncio.TimeoutError:
+            break
+
 
 @client.event
 async def on_message(message):
@@ -283,7 +289,9 @@ binod.shorten <url> = Shorten a URL
                 output = subprocess.check_output(query, shell=True).decode("utf-8")
                 await message.channel.send(f"```\n{output}\n```")
             else:
-                await message.channel.send(f"{message.author.mention} You're not allowed to do that!")
+                await message.channel.send(
+                    f"{message.author.mention} You're not allowed to do that!"
+                )
 
         except subprocess.CalledProcessError as e:
             await message.channel.send(e)
@@ -335,7 +343,9 @@ binod.shorten <url> = Shorten a URL
                 print(i)
                 await message.channel.send(text)
         else:
-            await message.channel.send(f"{message.author.mention} You're not allowed to do that!")
+            await message.channel.send(
+                f"{message.author.mention} You're not allowed to do that!"
+            )
 
 
 client.run(os.getenv("DISCORD_BOT_TOKEN"))
