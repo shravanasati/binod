@@ -10,6 +10,7 @@ from src.github import github_user, github_repo
 from src.memes import get_meme
 from src.shorten import shorten
 from src.compile import CodeExecutor
+import asyncio
 from enchant.utils import levenshtein
 
 
