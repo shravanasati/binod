@@ -57,6 +57,11 @@ func DisplayLeaderboard() {
 		return
 	}
 
+	if len(leaderboard.Data) == 0 {
+		color.Yellow("No entries in the binod leaderboard so far!")
+		return
+	}
+
 	color.Green("Leaderboard fetched successfully.\n")
 	data := [][]string{}
 	for i, v := range leaderboard.Data {
