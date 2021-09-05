@@ -247,6 +247,7 @@ func leaderBoardHandler(w http.ResponseWriter, r *http.Request) {
 
 	// getting leaderboard data
 	leaderboard := getLeaderBoardData()
+
 	data := make(map[int]interface{})
 	for i, p := range leaderboard {
 		data[i+1] = map[string]interface{}{
@@ -303,15 +304,15 @@ func main() {
 	http.HandleFunc("/registerPage", registerPageHandler)
 
 	// player api
-	http.HandleFunc("/join", joinPlayerHandler)
-	http.HandleFunc("/get", getPlayerHandler)
-	http.HandleFunc("/update", updatePlayerHandler)
-	http.HandleFunc("/remove", removePlayerHandler)
+	http.HandleFunc("/player/join", joinPlayerHandler)
+	http.HandleFunc("/player/get", getPlayerHandler)
+	http.HandleFunc("/player/update", updatePlayerHandler)
+	http.HandleFunc("/player/remove", removePlayerHandler)
 	http.HandleFunc("/leaderboard", leaderBoardHandler)
 
 	// message api
-	http.HandleFunc("/postmessage", postMessageHandler)
-	http.HandleFunc("/getmessage", getMessageHandler)
+	http.HandleFunc("/message/post", postMessageHandler)
+	http.HandleFunc("/message/get", getMessageHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
