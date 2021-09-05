@@ -64,12 +64,12 @@ func DisplayLeaderboard() {
 
 	color.Green("Leaderboard fetched successfully.\n")
 	data := [][]string{}
-	for i, v := range leaderboard.Data {
+	for i := 0; i < len(leaderboard.Data); i++ {
 		data = append(data,
 			[]string{
-				fmt.Sprintf("%d", i),
-				v.Username,
-				fmt.Sprintf("%d", v.Binods),
+				fmt.Sprintf("%d", i+1),
+				leaderboard.Data[i+1].Username,
+				fmt.Sprintf("%d", leaderboard.Data[i+1].Binods),
 			})
 	}
 
