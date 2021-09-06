@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/Shravan-1908/binod/cli/internal"
+	"github.com/Shravan-1908/binod/cli/internal/player"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +12,7 @@ var lbCmd = &cobra.Command{
 	Short: "View the binod leaderboard.",
 	Long: "The `lb` command displays the binod leaderboard.",
 	Run: func(cmd *cobra.Command, args []string) {
-		internal.DisplayLeaderboard()
+		player.DisplayLeaderboard()
 	},
 }
 

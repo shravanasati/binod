@@ -1,4 +1,4 @@
-package internal
+package player
 
 import (
 	"encoding/json"
@@ -11,38 +11,41 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-type LeaderBoardResp struct {
+const leaderboardURL = "http://binod-web.herokuapp.com/leaderboard"
+
+type leaderboardResp struct {
 	Success bool                `json:"success"`
 	Message string              `json:"message"`
-	Data    map[int]PlayerEntry `json:"data"`
+	Data    map[int]playerEntry `json:"data"`
 }
 
-type PlayerEntry struct {
+type playerEntry struct {
 	Username string `json:"username"`
 	Binods   int    `json:"binods"`
 }
 
-func getLeaderboard() (*LeaderBoardResp, error) {
-	r, err := http.Get("http://binod-web.herokuapp.com/leaderboard")
+func getLeaderboard() (*leaderboardResp, error) {
+	r, err := http.Get(leaderboardURL)
 	if err != nil {
-		return &LeaderBoardResp{}, err
+		return &leaderboardResp{}, err
 	}
 
 	defer r.Body.Close()
 
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
-		return &LeaderBoardResp{}, err
+		return &leaderboardResp{}, err
 	}
 
-	lb := &LeaderBoardResp{}
+	lb := &leaderboardResp{}
 	if err := json.Unmarshal(bodyBytes, lb); err != nil {
-		return &LeaderBoardResp{}, err
+		return &leaderboardResp{}, err
 	}
 
 	return lb, nil
 }
 
+// DisplayLeaderboard renders a colorful table for the binod leaderboard.
 func DisplayLeaderboard() {
 	color.Cyan("Fetching the leaderboard...")
 
