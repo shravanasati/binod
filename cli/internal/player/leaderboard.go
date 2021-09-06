@@ -79,7 +79,6 @@ func DisplayLeaderboard() {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"#", "Player", "Binod count"})
 
-
 	table.SetHeaderColor(
 		tablewriter.Colors{tablewriter.Bold, tablewriter.BgGreenColor, tablewriter.FgBlackColor},
 		tablewriter.Colors{tablewriter.Bold, tablewriter.BgYellowColor,

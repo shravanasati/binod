@@ -10,7 +10,7 @@ import (
 var statsCmd = &cobra.Command{
 	Use:   "stats",
 	Short: "Show your statistics.",
-	Long: `Show your binod statistics.`,
+	Long:  `Show your binod statistics.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("stats called")
 	},

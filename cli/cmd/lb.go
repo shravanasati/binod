@@ -5,12 +5,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 // lbCmd represents the lb command
 var lbCmd = &cobra.Command{
 	Use:   "lb",
 	Short: "View the binod leaderboard.",
-	Long: "The `lb` command displays the binod leaderboard.",
+	Long:  "The `lb` command displays the binod leaderboard.",
 	Run: func(cmd *cobra.Command, args []string) {
 		player.DisplayLeaderboard()
 	},

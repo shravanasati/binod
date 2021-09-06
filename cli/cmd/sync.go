@@ -31,7 +31,7 @@ import (
 var syncCmd = &cobra.Command{
 	Use:   "sync",
 	Short: "Sync your local binod stats with the global leaderboard.",
-	Long: `The sync command sync your local binod stats with global binod leaderboard, allowing you to compete with players around the world.`,
+	Long:  `The sync command sync your local binod stats with global binod leaderboard, allowing you to compete with players around the world.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("sync called")
 	},

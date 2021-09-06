@@ -31,7 +31,7 @@ import (
 var resetCmd = &cobra.Command{
 	Use:   "reset",
 	Short: "Resets your statistics.",
-	Long: "Reset your binod stats.",
+	Long:  "Reset your binod stats.",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("reset called")
 	},
