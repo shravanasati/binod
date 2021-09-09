@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"sort"
 	"sync"
+	"time"
+
+	"github.com/patrickmn/go-cache"
 )
 
 type Player struct {
@@ -17,7 +20,9 @@ type playerDB struct {
 	sync.Mutex
 }
 
+// global player database and cache
 var playerdb playerDB
+var dbCache = cache.New(5*time.Minute, 5*time.Minute)
 
 // addPlayer adds a new player to the database if the username doesn't exist and returns a
 // boolean value of true if the username is unique.
@@ -37,6 +42,15 @@ func addPlayer(p *Player) (bool, string) {
 }
 
 func getLeaderBoardData() []Player {
+	// t1 := time.Now()
+	items, found := dbCache.Get("leaderboard")
+	if found {
+		// fmt.Println("Leaderboard cache found.")
+		// fmt.Println("yes cache", time.Since(t1))
+		return items.([]Player)
+	}
+
+	// t2 := time.Now()
 	playerdb.Lock()
 	defer playerdb.Unlock()
 
@@ -44,6 +58,9 @@ func getLeaderBoardData() []Player {
 		return playerdb.players[i].Binods > playerdb.players[j].Binods
 	})
 
+	// fmt.Println("Setting cache...")
+	dbCache.Set("leaderboard", playerdb.players, cache.DefaultExpiration)
+	// fmt.Println("no cache", time.Since(t2))
 	return playerdb.players
 }
 
@@ -76,11 +93,17 @@ func deletePlayer(p *Player) bool {
 }
 
 func getPlayer(username string) (*Player, error) {
+	data, found := dbCache.Get("player-" + username)
+	if found {
+		return data.(*Player), nil
+	}
+
 	playerdb.Lock()
 	defer playerdb.Unlock()
 
 	for _, player := range playerdb.players {
 		if player.Username == username {
+			dbCache.Set("player-"+username, &player, time.Minute)
 			return &player, nil
 		}
 	}
