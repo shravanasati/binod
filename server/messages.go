@@ -7,16 +7,19 @@ import (
 	"time"
 )
 
+// message struct represents a message.
 type message struct {
 	username    string
 	usermessage string
 }
 
+// messageDB struct represents the message database.
 type messageDB struct {
 	messages []message
 	sync.Mutex
 }
 
+// global message database.
 var messagedb messageDB
 
 // posts a message to the server.

@@ -9,19 +9,23 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
+// Player struct represents a player in the database.
 type Player struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Binods   int    `json:"binods"`
 }
 
+// playerDB struct represents the database of players, and has a mutex associated with it.
 type playerDB struct {
 	players []Player
 	sync.Mutex
 }
 
-// global player database and cache
+// global player database
 var playerdb playerDB
+
+// global database cache
 var dbCache = cache.New(5*time.Minute, 5*time.Minute)
 
 // addPlayer adds a new player to the database if the username doesn't exist and returns a
@@ -41,6 +45,7 @@ func addPlayer(p *Player) (bool, string) {
 	return true, "Welcome " + p.Username + "!"
 }
 
+// getLeaderboardData returns a slice of players sorted by binods.
 func getLeaderBoardData() []Player {
 	// t1 := time.Now()
 	items, found := dbCache.Get("leaderboard")
@@ -64,6 +69,7 @@ func getLeaderBoardData() []Player {
 	return playerdb.players
 }
 
+// updatePlayer updates a player data in the database.
 func updatePlayer(p *Player) bool {
 	playerdb.Lock()
 	defer playerdb.Unlock()
@@ -78,6 +84,7 @@ func updatePlayer(p *Player) bool {
 	return false
 }
 
+// deletePlayer deletes a player from the database.
 func deletePlayer(p *Player) bool {
 	playerdb.Lock()
 	defer playerdb.Unlock()
@@ -92,6 +99,7 @@ func deletePlayer(p *Player) bool {
 	return false
 }
 
+// getPlayer returns a player from the database.
 func getPlayer(username string) (*Player, error) {
 	data, found := dbCache.Get("player-" + username)
 	if found {
