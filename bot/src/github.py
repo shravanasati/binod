@@ -47,5 +47,5 @@ def github_repo(username: str, repo: str) -> str:
 
 
 if __name__ == "__main__":
-    print(github_user("Shravan-1908"))
-    print(github_repo("Shravan-1908", "hydra"))
+    print(github_user("shravanasati"))
+    print(github_repo("shravanasati", "hydra"))

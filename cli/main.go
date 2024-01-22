@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/Shravan-1908/binod/cli/cmd"
+import "github.com/shravanasati/binod/cli/cmd"
 
 func main() {
 	cmd.Execute()

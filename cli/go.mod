@@ -1,4 +1,4 @@
-module github.com/Shravan-1908/binod/cli
+module github.com/shravanasati/binod/cli
 
 go 1.17
 

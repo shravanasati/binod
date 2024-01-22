@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/Shravan-1908/binod/cli/internal/player"
+	"github.com/shravanasati/binod/cli/internal/player"
 	"github.com/spf13/cobra"
 )
 

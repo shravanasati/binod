@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Shravan-1908/binod/cli/internal/fsutil"
+	"github.com/shravanasati/binod/cli/internal/fsutil"
 )
 
 // generateRandomKey generates a random 32 bit signing key for all encryption-decryption tasks.
